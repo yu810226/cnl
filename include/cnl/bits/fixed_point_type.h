@@ -10,14 +10,13 @@
 #if !defined(CNL_FIXED_POINT_DEF_H)
 #define CNL_FIXED_POINT_DEF_H 1
 
-#include <cnl/auxiliary/const_integer.h>
-#include <cnl/bits/number_base.h>
+#include <cnl/bits/scaled.h>
 
 /// compositional numeric library
 namespace cnl {
-    // forward declaration
-    template<class Rep = int, int Exponent = 0>
-    class fixed_point;
+//    // forward declaration
+//    template<class Rep = int, int Exponent = 0>
+//    class fixed_point;
 
     ////////////////////////////////////////////////////////////////////////////////
     // implementation-specific definitions
@@ -64,17 +63,14 @@ namespace cnl {
     /// To define a fixed-point value 1 byte in size with a sign bit, 3 integer bits and 4 fractional bits:
     /// \snippet snippets.cpp define a fixed_point value
 
-    template<class Rep, int Exponent>
-    class fixed_point
-            : public _impl::number_base<fixed_point<Rep, Exponent>, Rep> {
-        using _base = _impl::number_base<fixed_point<Rep, Exponent>, Rep>;
-    public:
-        ////////////////////////////////////////////////////////////////////////////////
-        // types
 
-        /// alias to template parameter, \a Rep
-        using rep = Rep;
 
+
+
+
+
+    template<int Exponent>
+    class fixed_point_scale {
         ////////////////////////////////////////////////////////////////////////////////
         // constants
 
@@ -83,114 +79,40 @@ namespace cnl {
 
         /// number of binary digits this type can represent;
         /// equivalent to [std::numeric_limits::digits](http://en.cppreference.com/w/cpp/types/numeric_limits/digits)
+        template<class Rep>
         constexpr static int digits = std::numeric_limits<Rep>::digits;
 
         /// number of binary digits devoted to integer part of value;
         /// can be negative for specializations with especially small ranges
-        constexpr static int integer_digits = digits+exponent;
+        template<class Rep>
+        constexpr static int integer_digits = digits<Rep>+exponent;
 
         /// number of binary digits devoted to fractional part of value;
         /// can be negative for specializations with especially large ranges
         constexpr static int fractional_digits = -exponent;
 
+    public:
         ////////////////////////////////////////////////////////////////////////////////
         // functions
 
-    private:
-        // constructor taking representation explicitly using operator++(int)-style trick
-        constexpr fixed_point(rep r, int)
-                :_base(r)
-        {
+        template<class ToRep, class FromExponent, class FromRep>
+        constexpr ToRep convert(FromRep const& value) {
+            return
         }
 
-    public:
-        /// default constructor
-        constexpr fixed_point() : _base() { }
-
-        /// constructor taking a fixed-point type
-        template<class FromRep, int FromExponent>
-        constexpr fixed_point(fixed_point<FromRep, FromExponent> const& rhs)
-                : _base(fixed_point_to_rep(rhs))
-        {
+        template<class To, class From>
+        constexpr To to_rep(From const& value) {
+            return convert<To, 0>(value);
         }
 
-        /// constructor taking an integral_constant type
-        template<class Integral, Integral Constant>
-        constexpr fixed_point(std::integral_constant<Integral, Constant> const&)
-                : fixed_point(fixed_point<Integral, 0>::from_data(Constant))
-        {
-        }
 
         /// constructor taking an integer type
         template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_integer, int> Dummy = 0>
-        constexpr fixed_point(S const& s)
-            : fixed_point(fixed_point<S, 0>::from_data(s))
+        constexpr scaled(S const& s)
+        : scaled(scaled<S, 0>::from_data(s))
         {
         }
 
-        /// constructor taking an integral_constant type
-        template<class Integral, Integral Value, int Digits>
-        constexpr fixed_point(const_integer<Integral, Value, Digits, Exponent> ci)
-            : _base(ci << Exponent)
-        {
-        }
-
-        /// constructor taking a floating-point type
-        template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_iec559, int> Dummy = 0>
-        constexpr fixed_point(S s)
-                :_base(floating_point_to_rep(s))
-        {
-        }
-
-        /// copy assignment operator taking an integer type
-        template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_integer, int> Dummy = 0>
-        CNL_COPY_CONSTEXPR fixed_point& operator=(S s)
-        {
-            return operator=(fixed_point<S, 0>::from_data(s));
-        }
-
-        /// copy assignment operator taking a floating-point type
-        template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_iec559, int> Dummy = 0>
-        CNL_COPY_CONSTEXPR fixed_point& operator=(S s)
-        {
-            _base::operator=(floating_point_to_rep(s));
-            return *this;
-        }
-
-        /// copy assignement operator taking a fixed-point type
-        template<class FromRep, int FromExponent>
-        CNL_COPY_CONSTEXPR fixed_point& operator=(fixed_point<FromRep, FromExponent> const& rhs)
-        {
-            _base::operator=(fixed_point_to_rep(rhs));
-            return *this;
-        }
-
-        /// returns value represented as bool
-        template<typename R = Rep>
-        constexpr operator typename std::enable_if<std::is_convertible<Rep, bool>::value, bool>() const
-        {
-            return static_cast<bool>(_base::data());
-        }
-
-        /// returns value represented as integral
-        template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_integer, int> Dummy = 0>
-        constexpr operator S() const
-        {
-            return rep_to_integral<S>(_base::data());
-        }
-
-        /// returns value represented as floating-point
-        template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_iec559, int> Dummy = 0>
-        explicit constexpr operator S() const
-        {
-            return rep_to_floating_point<S>(_base::data());
-        }
-
-        /// creates an instance given the underlying representation value
-        static constexpr fixed_point from_data(rep const& r)
-        {
-            return fixed_point(r, 0);
-        }
 
     private:
         template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_iec559, int> Dummy = 0>
@@ -202,37 +124,43 @@ namespace cnl {
         template<class S>
         static constexpr S inverse_one();
 
-        template<class S>
-        static constexpr S rep_to_integral(rep r);
+    public:
+        template<class S, class Rep>
+        static constexpr S rep_to_integral(Rep r);
+    private:
 
         template<class S>
         static constexpr rep floating_point_to_rep(S s);
 
+    public:
         template<class S>
         static constexpr S rep_to_floating_point(rep r);
+    private:
 
-        template<class FromRep, int FromExponent>
-        static constexpr rep fixed_point_to_rep(fixed_point<FromRep, FromExponent> const& rhs);
+        template<class FromRep, class FromScale>
+        static constexpr rep scaled_to_rep(scaled<FromRep, FromScale> const& rhs);
     };
 
     /// value of template parameter, \a Exponent
-    template<class Rep, int Exponent>
-    constexpr int fixed_point<Rep, Exponent>::exponent;
+    template<int Exponent>
+    constexpr int fixed_point_scale<Exponent>::exponent;
 
     /// number of binary digits this type can represent;
     /// equivalent to [std::numeric_limits::digits](http://en.cppreference.com/w/cpp/types/numeric_limits/digits)
-    template<class Rep, int Exponent>
-    constexpr int fixed_point<Rep, Exponent>::digits;
+    template<int Exponent>
+    template<class Rep>
+    constexpr int fixed_point_scale<Exponent>::digits;
 
     /// number of binary digits devoted to integer part of value;
     /// can be negative for specializations with especially small ranges
-    template<class Rep, int Exponent>
-    constexpr int fixed_point<Rep, Exponent>::integer_digits;
+    template<int Exponent>
+    template<class Rep>
+    constexpr int fixed_point_scale<Exponent>::integer_digits;
 
     /// number of binary digits devoted to fractional part of value;
     /// can be negative for specializations with especially large ranges
-    template<class Rep, int Exponent>
-    constexpr int fixed_point<Rep, Exponent>::fractional_digits;
+    template<int Exponent>
+    constexpr int fixed_point_scale<Exponent>::fractional_digits;
 
     ////////////////////////////////////////////////////////////////////////////////
     // general-purpose implementation-specific definitions
@@ -248,7 +176,7 @@ namespace cnl {
         };
 
         template<class Rep, int Exponent>
-        struct is_fixed_point<fixed_point<Rep, Exponent>>
+        struct is_fixed_point<scaled<Rep, fixed_point_scale<Exponent>>>
                 : public std::true_type {
         };
 
@@ -324,9 +252,9 @@ namespace cnl {
     ////////////////////////////////////////////////////////////////////////////////
     // cnl::fixed_point<> member definitions
 
-    template<class Rep, int Exponent>
+    template<int Exponent>
     template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_iec559, int> Dummy>
-    constexpr S fixed_point<Rep, Exponent>::one()
+    constexpr S fixed_point_scale<Exponent>::one()
     {
         return _impl::fp::type::pow2<S, -exponent>();
     }
@@ -372,11 +300,14 @@ namespace cnl {
     }
 
     template<class Rep, int Exponent>
-    template<class FromRep, int FromExponent>
-    constexpr typename fixed_point<Rep, Exponent>::rep fixed_point<Rep, Exponent>::fixed_point_to_rep(fixed_point<FromRep, FromExponent> const& rhs)
+    template<class FromRep, class FromScale>
+    constexpr typename scaled<Rep, Exponent>::rep fixed_point<Rep, Exponent>::scaled_to_rep(fixed_point<FromRep, FromScale> const& rhs)
     {
         return _impl::shift_left<FromExponent-exponent, rep>(rhs.data());
     }
+
+    template<class Rep, int Exponent>
+    using fixed_point = scaled<Rep, fixed_point_scale<Exponent>>;
 }
 
 #endif  // CNL_FIXED_POINT_DEF_H
