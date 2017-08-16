@@ -15,6 +15,8 @@
 
 #include <utility>
 
+#include <cnl/auxiliary/boost.multiprecision.h>
+
 /// compositional numeric library
 namespace cnl {
 
@@ -101,6 +103,13 @@ namespace cnl {
         };
 #endif
 
+#if defined(CPP_INT_FP_ENABLED)
+        template<_digits_type MinNumDigits>
+        struct set_digits_signed<MinNumDigits, enable_for_range_t<MinNumDigits, boost::multiprecision::cpp_int, boost::multiprecision::cpp_int>> {
+            using type = boost::multiprecision::cpp_int;
+        };
+#endif
+
         ////////////////////////////////////////////////////////////////////////////////
         // cnl::_num_traits_impl::set_digits_unsigned
 
@@ -133,6 +142,13 @@ namespace cnl {
             using type = CNL_UINT128;
         };
 #endif
+
+//#if defined(CPP_INT_FP_ENABLED)
+//        template<_digits_type MinNumDigits>
+//        struct set_digits_unsigned<MinNumDigits, enable_for_range_t<MinNumDigits, boost::multiprecision::cpp_int, boost::multiprecision::cpp_int>> {
+//            using type = boost::multiprecision::cpp_int;
+//        };
+//#endif
 
         ////////////////////////////////////////////////////////////////////////////////
         // cnl::_num_traits_impl::set_digits_integer
@@ -176,6 +192,13 @@ namespace cnl {
     template<_digits_type Digits>
     struct set_digits<CNL_UINT128, Digits>
             : _num_traits_impl::set_digits_integer<unsigned, Digits> {
+    };
+#endif
+
+#if defined(CPP_INT_FP_ENABLED)
+    template<_digits_type Digits>
+    struct set_digits<boost::multiprecision::cpp_int, Digits>
+            : _num_traits_impl::set_digits_integer<signed, Digits> {
     };
 #endif
 
@@ -230,6 +253,19 @@ namespace cnl {
     template<>
     struct make_signed<CNL_UINT128> {
         using type = CNL_INT128;
+    };
+#endif
+
+#if defined(CPP_INT_FP_ENABLED)
+    // TODO: cnl::is_integral
+    template<>
+    struct make_unsigned<boost::multiprecision::cpp_int> {
+        using type = CNL_UINT128;
+    };
+    
+    template<>
+    struct make_signed<boost::multiprecision::cpp_int> {
+        using type = boost::multiprecision::cpp_int;
     };
 #endif
 
