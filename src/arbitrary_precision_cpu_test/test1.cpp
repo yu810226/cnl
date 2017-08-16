@@ -1,25 +1,31 @@
 #include <iostream>
 
-#include <sg14/fixed_point>
+#include <cnl/fixed_point.h>
+#include "fixed_point/elastic/elastic_fixed_point.h"
 
-using sg14::fixed_point;
-using sg14::make_fixed;
-using sg14::make_ufixed;
-using sg14::_impl::identical;
-
+using cnl::fixed_point;
+using cnl::elastic_fixed_point;
 
 int main (void) {
-    make_ufixed<4, 4> value{15.9375};
-    
-    //error: no support for print out
-    //std::cout << value << std::endl; 
+    auto pi = elastic_fixed_point<31, -16>{3.141}; 
+    std::cout << pi << std::endl; 
 
-    if(identical(make_fixed<7, 0>(15)/make_fixed<7, 0>(2), fixed_point<int, -7>(7.5f)))
-        std::cout << "true" << std::endl ;
-    
-    auto pi = fixed_point<uint16_t, -14>{3.141};
     if (pi > 3.1 && pi < 3.2) 
         std::cout << "true" << std::endl;
 
+    auto k = elastic_fixed_point<63, -6>{3.141};
+    std::cout << k << std::endl; 
+   
+    /* Print out result is different from comparison result */
+    auto q = elastic_fixed_point<63, -40>{214744.54745};
+    std::cout << q << std::endl; 
+    
+    if (q > 214744.5 && q < 214744.6) 
+        std::cout << "true" << std::endl;
+    
+    //Will fail on compiling
+    auto g = elastic_fixed_point<65, -5>{ 2147483647.1 };
+    //std::cout << g << std::endl; 
+    
     return 0;
 }
