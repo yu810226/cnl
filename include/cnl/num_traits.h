@@ -15,7 +15,9 @@
 
 #include <utility>
 
-#include <cnl/auxiliary/boost.multiprecision.h>
+//#if defined(CPP_INT_FP_ENABLED)
+//#include <cnl/auxiliary/boost.multiprecision.h>
+//#endif
 
 /// compositional numeric library
 namespace cnl {
@@ -103,12 +105,12 @@ namespace cnl {
         };
 #endif
 
-#if defined(CPP_INT_FP_ENABLED)
-        template<_digits_type MinNumDigits>
-        struct set_digits_signed<MinNumDigits, enable_for_range_t<MinNumDigits, boost::multiprecision::cpp_int, boost::multiprecision::cpp_int>> {
-            using type = boost::multiprecision::cpp_int;
-        };
-#endif
+//#if defined(CPP_INT_FP_ENABLED)
+//        template<_digits_type MinNumDigits>
+//        struct set_digits_signed<MinNumDigits, enable_for_range_t<MinNumDigits, boost::multiprecision::cpp_int, boost::multiprecision::cpp_int>> {
+//            using type = boost::multiprecision::cpp_int;
+//        };
+//#endif
 
         ////////////////////////////////////////////////////////////////////////////////
         // cnl::_num_traits_impl::set_digits_unsigned
@@ -195,12 +197,12 @@ namespace cnl {
     };
 #endif
 
-#if defined(CPP_INT_FP_ENABLED)
-    template<_digits_type Digits>
-    struct set_digits<boost::multiprecision::cpp_int, Digits>
-            : _num_traits_impl::set_digits_integer<signed, Digits> {
-    };
-#endif
+//#if defined(CPP_INT_FP_ENABLED)
+//    template<_digits_type Digits>
+//    struct set_digits<boost::multiprecision::cpp_int, Digits>
+//            : _num_traits_impl::set_digits_integer<signed, Digits> {
+//    };
+//#endif
 
     template<class T, _digits_type Digits>
     using set_digits_t = typename set_digits<T, Digits>::type;
@@ -256,18 +258,18 @@ namespace cnl {
     };
 #endif
 
-#if defined(CPP_INT_FP_ENABLED)
-    // TODO: cnl::is_integral
-    template<>
-    struct make_unsigned<boost::multiprecision::cpp_int> {
-        using type = CNL_UINT128;
-    };
-    
-    template<>
-    struct make_signed<boost::multiprecision::cpp_int> {
-        using type = boost::multiprecision::cpp_int;
-    };
-#endif
+//#if defined(CPP_INT_FP_ENABLED)
+//    // TODO: cnl::is_integral
+//    template<>
+//    struct make_unsigned<boost::multiprecision::cpp_int> {
+//        using type = CNL_UINT128;
+//    };
+//    
+//    template<>
+//    struct make_signed<boost::multiprecision::cpp_int> {
+//        using type = boost::multiprecision::cpp_int;
+//    };
+//#endif
 
     template<class T>
     using make_unsigned_t = typename make_unsigned<T>::type;
