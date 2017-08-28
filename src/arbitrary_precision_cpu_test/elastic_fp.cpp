@@ -13,18 +13,18 @@ int main (void) {
     if (pi > 3.1 && pi < 3.2) 
         std::cout << "true" << std::endl;
 
-    auto k = elastic_fixed_point<63, -6>{3.141};
-    std::cout << k << std::endl; 
+    //auto k = elastic_fixed_point<63, -6>{3.141};
+    //std::cout << k << std::endl; 
    
     /* Print out result is different from comparison result */
-    auto q = elastic_fixed_point<63, -40>{214744.54745};
-    std::cout << q << std::endl; 
+    //auto q = elastic_fixed_point<63, -40>{214744.54745};
+    //std::cout << q << std::endl; 
     
-    if (q > 214744.5 && q < 214744.6) 
-        std::cout << "true" << std::endl;
+    //if (q > 214744.5 && q < 214744.6) 
+    //    std::cout << "true" << std::endl;
     
     //Will fail on compiling
-    auto g = elastic_fixed_point<65, -5>{ 2147483647.1 };
+    //auto g = elastic_fixed_point<65, -5>{ 2147483647.1 };
     //std::cout << g << std::endl; 
     
     return 0;
