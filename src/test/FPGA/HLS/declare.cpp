@@ -1,5 +1,5 @@
 #include <iostream>
-#include "ap_int.h"
+#include "cnl/FPGA/ap.limits.h"
 
 int main(int argc, char *argv[]) {
   auto r = ap_fixed<45, 20>{ 22.96875 };

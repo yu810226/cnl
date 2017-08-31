@@ -72,7 +72,7 @@
 #else
 
 #include <math.h>
-#include "etc/ap_int_sim.h"
+#include "cnl/FPGA/Xilinx/include/etc/ap_int_sim.h"
 #include <sstream>
 
 #define HALF_MAN 10

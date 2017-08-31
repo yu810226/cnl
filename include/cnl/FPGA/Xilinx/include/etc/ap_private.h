@@ -79,7 +79,7 @@ typedef unsigned __int64 uint64_t;
 #include <stdint.h>
 #endif
 
-#include "hls_half.h"
+#include "cnl/FPGA/Xilinx/include/hls_half.h"
 
 #undef INLINE
 #if 1
@@ -1398,7 +1398,6 @@ public:
     static const uint64_t sign_bit_mask = 1ULL << (APINT_BITS_PER_WORD-1);
     template<int _AP_W1>  struct sign_ext_mask { static const uint64_t mask=~0ULL<<_AP_W1;};
     static const int width = _AP_W;
-
 
     enum { BitWidth=_AP_W, _AP_N = 1, };
     ValType VAL;    ///< Used to store the <= 64 bits integer value.

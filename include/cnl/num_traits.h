@@ -13,11 +13,15 @@
 #include "bits/limits.h"
 #include "bits/type_traits.h"
 
+//#include "FPGA/ap.limits.h"
+
 #include <utility>
 
 //#if defined(CPP_INT_FP_ENABLED)
 //#include <cnl/auxiliary/boost.multiprecision.h>
 //#endif
+
+//#include <cnl/FPGA/ap.limits.h>
 
 /// compositional numeric library
 namespace cnl {

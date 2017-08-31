@@ -1,5 +1,5 @@
 #include <iostream>
-#include "ap_int.h"
+#include "cnl/FPGA/Xilinx/include/ap_int.h"
 
 int main(int argc, char *argv[]) {
   ap_fixed<45, 20> r;

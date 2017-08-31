@@ -72,8 +72,8 @@
 #else
 
 #include "hls_half.h"
-#include "etc/ap_int_sim.h"
-#include "etc/ap_fixed_sim.h"
+#include "cnl/FPGA/Xilinx/include/etc/ap_int_sim.h"
+#include "cnl/FPGA/Xilinx/include/etc/ap_fixed_sim.h"
 
 //Forward declaration
 template<int _AP_W, int _AP_I, ap_q_mode _AP_Q, 
