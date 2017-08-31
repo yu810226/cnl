@@ -14,7 +14,7 @@ using namespace cnl;
 //No need to specify the name space now
 //using namespace xilinx::ap;
 
-template<unsigned NumBits>
+template<int NumBits>
 //using rep = ap_int_backend<NumBits, true>;
 using rep = ap_int<NumBits>;
 
