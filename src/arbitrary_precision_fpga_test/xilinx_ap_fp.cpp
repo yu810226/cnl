@@ -11,25 +11,6 @@
 
 using namespace cnl;
 
-/* This part is for referencing boost multiprecision*/
-//using namespace boost::multiprecision;
-
-//template<unsigned NumBits>
-//using rep = number<cpp_int_backend<NumBits, NumBits, signed_magnitude, unchecked, void>>;
-
-//int main() {
-//    // Define a fixed point type with 400 integer digits and 6 fractional digits.
-//    using big_fixed = fixed_point<rep<400>, -6>;
-//
-//    auto pi = big_fixed{3.141};
-//    std::cout << pi << std::endl;
-//
-//    auto q = big_fixed{34234234234242423423423.1431};
-//    std::cout << q << std::endl;
-//
-//    return 0;
-//}
-
 /* This part is for testing xilinx ap_int, ap_uint, ap_fixed, ap_ufixed */
 //int main() {
 //  auto c = ap_uint<3>{ 2 } + ap_int<4>{ -3 };
@@ -48,7 +29,8 @@ template<int NumBits>
 //using rep = ap_int_backend<NumBits, true>;
 using rep = ap_int<NumBits>;
 
-int main() {
+int test_xilinx_ap_int() {
+
     using big_fixed = fixed_point<rep<1003>, -6>;
     //using big_fixed = fixed_point<ap_int<400>, -6>;
 
@@ -69,4 +51,95 @@ int main() {
     std::cout << sizeof(big_fixed) << std::endl; 
 }
 
+void test_xilinx_cal_over64() {
 
+    // Define an unsigned type with 400 integer digits and 0 fractional digits.
+    using big_number = fixed_point<rep<400>, 0>; 
+
+    /* Can not work now */
+    // a googol is 10^100
+    auto googol = big_number{1};
+    //for (auto zeros = 0; zeros!=100; ++zeros) {
+    //    googol *= 10; 
+    //}   
+
+    //// "1e+100"
+    //std::cout << "googol: " << googol << std::endl;
+
+    //// Dividing a s31:0 number by a u400:0 number
+    //auto googolth = 1 / googol;
+
+    //// produces a s31::400 number.
+    ////static_assert(is_same<decltype(googolth), fixed_point<rep<432>, -400> >::value, "");
+
+    //// Prints "1e-100" (although this value is only approximate).
+    //std::cout << "googolth: " << googolth << std::endl;
+}
+
+/*For boost multiprecision*/
+#include <cnl/auxiliary/boost.multiprecision.h>
+using namespace boost::multiprecision;
+
+template<unsigned NumBits>
+using repB = number<cpp_int_backend<NumBits, NumBits, signed_magnitude, unchecked, void>>;
+
+/* This part is for referencing boost multiprecision*/
+void ref_boost() {
+    
+    // Define a fixed point type with 1003 integer digits and 6 fractional digits.
+    using big_fixed = fixed_point<repB<1003>, -6>;
+
+    auto pi = big_fixed{3.141};
+    std::cout << pi << std::endl;
+
+    auto g = big_fixed{13423424242.141};
+    std::cout << g << std::endl;
+
+    //auto q = big_fixed{34234234234242423423423.1431};
+    //std::cout << q << std::endl;
+
+    std::cout << "sizeof" << std::endl;
+    std::cout << sizeof(pi) << std::endl; 
+    std::cout << sizeof(big_fixed) << std::endl; 
+}
+
+void test_boost_cal_over64() {
+    
+    // Define an unsigned type with 400 integer digits and 0 fractional digits.
+    using big_number = fixed_point<repB<400>, 0>; 
+
+    // a googol is 10^100
+    auto googol = big_number{1};
+    for (auto zeros = 0; zeros!=100; ++zeros) {
+        googol *= 10; 
+    }   
+
+    // "1e+100"
+    std::cout << "googol: " << googol << std::endl;
+
+    // Dividing a s31:0 number by a u400:0 number
+    auto googolth = 1 / googol;
+
+    // produces a s31::400 number.
+    //static_assert(is_same<decltype(googolth), fixed_point<rep<432>, -400> >::value, "");
+
+    // Prints "1e-100" (although this value is only approximate).
+    std::cout << "googolth: " << googolth << std::endl;
+}
+
+int main () {
+    
+    std::cout << "boost multiprecision" << std::endl;
+    ref_boost();
+    
+    std::cout << "xilinx ap_int" << std::endl;
+    test_xilinx_ap_int();
+    
+    std::cout << "Calculate boost multiprecision" << std::endl;
+    test_boost_cal_over64();
+    
+    std::cout << "Calculate xilinx ap_int" << std::endl;
+    test_xilinx_cal_over64();
+    
+    return 0;
+}

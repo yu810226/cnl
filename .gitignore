@@ -16,6 +16,7 @@
 *.VC.VC.opendb
 *.vcxproj
 *.vcxproj.filters
+*.swp
 
 cscope.*
 tags

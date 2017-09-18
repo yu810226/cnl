@@ -19,8 +19,12 @@ template<int NumBits>
 using rep = ap_int<NumBits>;
 
 int main() {
-    //auto q = big_fixed{34234234234242423423423.1431};
-    //std::cout << q << std::endl;
+    
+    using big_fixed = fixed_point<rep<1003>, -6>;
+
+    // Input over than 64 bit is not supported now
+    auto q = big_fixed{34234234234242423423423.1431};
+    std::cout << q << std::endl;
 
 }
 

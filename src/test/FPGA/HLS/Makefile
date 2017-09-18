@@ -2,7 +2,7 @@ TARGETS = add bigFixed limitFixed sizeOfFixed over64Fixed over1024Fixed declare 
 
 all: $(TARGETS)
 
-CXXFLAGS += -I../../../../include/ -g
+CXXFLAGS += -I../../../../include/ -g3
 
 clean:
 
