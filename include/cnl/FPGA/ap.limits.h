@@ -21,5 +21,20 @@ namespace std {
         static constexpr bool is_signed = false;
         static int constexpr digits = CHAR_BIT*sizeof(ap_uint<NumBits>)-1;
     };
+    
+    template<int NumBits, bool Signedness>
+    struct numeric_limits<ap_private<NumBits, Signedness, true>> {
+        static constexpr bool is_integer = true;
+        static constexpr bool is_signed = Signedness;
+        static int constexpr digits = CHAR_BIT*sizeof(ap_private<NumBits, Signedness, true>)-1;
+    };
+    
+    template<int NumBits, bool Signedness>
+    struct numeric_limits<ap_private<NumBits, Signedness, false>> {
+        static constexpr bool is_integer = true;
+        static constexpr bool is_signed = Signedness;
+        static int constexpr digits = CHAR_BIT*sizeof(ap_private<NumBits, Signedness, false>)-1;
+    };
+    
 }
 #endif //CNL_AP_LIMITS_H

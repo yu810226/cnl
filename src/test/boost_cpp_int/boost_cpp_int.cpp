@@ -42,4 +42,9 @@ int main () {
 
     //std::cout << std::numeric_limits<cpp_int>::digits << std::endl;
     //std::cout << std::numeric_limits<int>::digits << std::endl;
+
+    cpp_int dividen = 1000;
+    auto fp = 1/dividen;
+
+    std::cout << fp << std::endl;
 }

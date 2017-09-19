@@ -14,6 +14,8 @@
 #include <limits>
 #include <type_traits>
 
+#include "cnl/FPGA/ap.limits.h"
+
 namespace cnl {
     namespace _impl {
         template<class Derived, class Rep>

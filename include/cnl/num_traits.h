@@ -13,7 +13,7 @@
 #include "bits/limits.h"
 #include "bits/type_traits.h"
 
-//#include "FPGA/ap.limits.h"
+#include "FPGA/ap.limits.h"
 
 #include <utility>
 
@@ -458,9 +458,15 @@ namespace cnl {
 
         template<class T>
         constexpr scale_result_type<T> pown(int base, int exp) {
-            return exp
-                   ? pown<T>(base, exp - 1) * static_cast<scale_result_type<T>>(base)
-                   : static_cast<scale_result_type<T>>(1);
+            //return exp
+            //       ? pown<T>(base, exp - 1) * static_cast<scale_result_type<T>>(base)
+            //       : static_cast<scale_result_type<T>>(1);
+            //linyay
+            //return static_cast<scale_result_type<T>>(1);
+            if (exp)
+                return pown<T>(base, exp - 1) * static_cast<scale_result_type<T>>(base);
+            else
+                return static_cast<scale_result_type<T>>(1);
         }
 
         template<class T>
@@ -478,10 +484,17 @@ namespace cnl {
     struct scale {
         constexpr auto operator()(T const& i, int base, int exp) const
         -> _num_traits_impl::scale_result_type<T> {
-            return _impl::from_rep<_num_traits_impl::scale_result_type<T>>(
-                    (exp < 0)
-                    ? _impl::to_rep<T>(i) / _num_traits_impl::pow<T>(base, -exp)
-                    : _impl::to_rep<T>(i) * _num_traits_impl::pow<T>(base, exp));
+            //return _impl::from_rep<_num_traits_impl::scale_result_type<T>>(
+            //        (exp < 0)
+            //        ? _impl::to_rep<T>(i) / _num_traits_impl::pow<T>(base, -exp)
+            //        : _impl::to_rep<T>(i) * _num_traits_impl::pow<T>(base, exp));
+            //linyay
+            //return _impl::from_rep<_num_traits_impl::scale_result_type<T>>(
+            //        _impl::to_rep<T>(i) * _num_traits_impl::pow<T>(base, exp));
+            if (exp < 0) 
+                return _impl::to_rep<T>(i) / _num_traits_impl::pow<T>(base, -exp);
+            else
+                return _impl::to_rep<T>(i) * _num_traits_impl::pow<T>(base, exp);
         }
     };
     

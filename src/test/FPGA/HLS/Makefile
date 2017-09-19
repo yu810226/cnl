@@ -1,4 +1,4 @@
-TARGETS = add bigFixed limitFixed sizeOfFixed over64Fixed over1024Fixed declare noDeclaration pi
+TARGETS = op bigFixed limitFixed sizeOfFixed over64Fixed over1024Fixed declare noDeclaration pi
 
 all: $(TARGETS)
 

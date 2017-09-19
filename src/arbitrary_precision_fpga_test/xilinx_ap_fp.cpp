@@ -59,21 +59,25 @@ void test_xilinx_cal_over64() {
     /* Can not work now */
     // a googol is 10^100
     auto googol = big_number{1};
-    //for (auto zeros = 0; zeros!=100; ++zeros) {
-    //    googol *= 10; 
-    //}   
+    for (auto zeros = 0; zeros!=2; ++zeros) {
+        googol *= 10; 
+    }   
 
+<<<<<<< HEAD
+    // "1e+100"
+=======
     //// "1e+100"
-    //std::cout << "googol: " << googol << std::endl;
+>>>>>>> 94af38e1351edb79850294b4dac2c48973f85bfe
+    std::cout << "googol: " << googol << std::endl;
 
-    //// Dividing a s31:0 number by a u400:0 number
-    //auto googolth = 1 / googol;
+    // Dividing a s31:0 number by a u400:0 number
+    auto googolth = 1 / googol;
 
     //// produces a s31::400 number.
-    ////static_assert(is_same<decltype(googolth), fixed_point<rep<432>, -400> >::value, "");
+    //static_assert(is_same<decltype(googolth), fixed_point<rep<432>, -400> >::value, "");
 
     //// Prints "1e-100" (although this value is only approximate).
-    //std::cout << "googolth: " << googolth << std::endl;
+    std::cout << "googolth: " << googolth << std::endl;
 }
 
 /*For boost multiprecision*/
@@ -110,7 +114,7 @@ void test_boost_cal_over64() {
 
     // a googol is 10^100
     auto googol = big_number{1};
-    for (auto zeros = 0; zeros!=100; ++zeros) {
+    for (auto zeros = 0; zeros!=2; ++zeros) {
         googol *= 10; 
     }   
 
