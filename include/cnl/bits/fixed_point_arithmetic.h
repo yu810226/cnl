@@ -285,9 +285,7 @@ namespace cnl {
             // cnl::_impl::fixed_point::operate
 
             template<class PolicyTag, class Operation, class Lhs, class Rhs>
-            constexpr auto operate(Lhs const& lhs, Rhs const& rhs, Operation)
-            -> typename arithmetic::operate_params<PolicyTag, Operation, Lhs, Rhs>::result_type
-            {
+            constexpr auto operate(Lhs const& lhs, Rhs const& rhs, Operation) {
                 using params = arithmetic::operate_params<PolicyTag, Operation, Lhs, Rhs>;
                 using intermediate_lhs = typename params::intermediate_lhs;
                 using intermediate_rhs = typename params::intermediate_rhs;

@@ -152,16 +152,12 @@ namespace cnl {
 
     template<
             class Integral, Integral Value>
-    constexpr auto make_elastic_integer(const_integer<Integral, Value>)
-    -> elastic_integer<used_bits(Value)>
-    {
+    constexpr auto make_elastic_integer(const_integer<Integral, Value>) {
         return elastic_integer<used_bits(Value)>{Value};
     }
 
     template<class Narrowest = int, class Integral, _impl::enable_if_t<!is_const_integer<Integral>::value, int> Dummy = 0>
-    constexpr auto make_elastic_integer(Integral const& value)
-    -> decltype(elastic_integer<std::numeric_limits<Integral>::digits, Narrowest>{value})
-    {
+    constexpr auto make_elastic_integer(Integral const& value) {
         return elastic_integer<std::numeric_limits<Integral>::digits, Narrowest>{value};
     }
 
@@ -195,9 +191,7 @@ namespace cnl {
 
     // operator~
     template<int RhsDigits, class RhsNarrowest>
-    constexpr auto operator~(elastic_integer<RhsDigits, RhsNarrowest> const& rhs)
-    -> elastic_integer<RhsDigits, RhsNarrowest>
-    {
+    constexpr auto operator~(elastic_integer<RhsDigits, RhsNarrowest> const& rhs) {
         using elastic_integer = elastic_integer<RhsDigits, RhsNarrowest>;
         using rep = typename elastic_integer::rep;
         return elastic_integer::from_data(
@@ -208,31 +202,23 @@ namespace cnl {
 
     // operator<<
     template<int LhsDigits, class LhsNarrowest, class Rhs>
-    constexpr auto operator<<(elastic_integer<LhsDigits, LhsNarrowest> const& lhs, Rhs const& rhs)
-    -> elastic_integer<LhsDigits, LhsNarrowest>
-    {
+    constexpr auto operator<<(elastic_integer<LhsDigits, LhsNarrowest> const& lhs, Rhs const& rhs) {
         return elastic_integer<LhsDigits, LhsNarrowest>::from_data(lhs.data() << rhs);
     }
 
     template<class Lhs, int RhsDigits, class RhsNarrowest>
-    constexpr auto operator<<(Lhs const& lhs, elastic_integer<RhsDigits, RhsNarrowest> const& rhs)
-    -> decltype(lhs << 0)
-    {
+    constexpr auto operator<<(Lhs const& lhs, elastic_integer<RhsDigits, RhsNarrowest> const& rhs) {
         return lhs << rhs.data();
     }
 
     // operator>>
     template<int LhsDigits, class LhsNarrowest, class Rhs>
-    constexpr auto operator>>(elastic_integer<LhsDigits, LhsNarrowest> const& lhs, Rhs const& rhs)
-    -> elastic_integer<LhsDigits, LhsNarrowest>
-    {
+    constexpr auto operator>>(elastic_integer<LhsDigits, LhsNarrowest> const& lhs, Rhs const& rhs) {
         return elastic_integer<LhsDigits, LhsNarrowest>::from_data(lhs.data() >> rhs);
     }
 
     template<class Lhs, int RhsDigits, class RhsNarrowest>
-    constexpr auto operator>>(Lhs const& lhs, elastic_integer<RhsDigits, RhsNarrowest> const& rhs)
-    -> decltype(lhs >> 0)
-    {
+    constexpr auto operator>>(Lhs const& lhs, elastic_integer<RhsDigits, RhsNarrowest> const& rhs) {
         return lhs >> rhs.data();
     }
 
@@ -244,10 +230,7 @@ namespace cnl {
                 _impl::enable_if_t<FromDigits!=OtherDigits || !std::is_same<FromNarrowest, OtherNarrowest>::value, std::nullptr_t> Dummy = nullptr>
         constexpr auto cast_to_common_type(
                 elastic_integer<FromDigits, FromNarrowest> const& from,
-                elastic_integer<OtherDigits, OtherNarrowest> const&)
-        -> decltype(static_cast<_impl::common_type_t<
-                elastic_integer<FromDigits, FromNarrowest>,
-                elastic_integer<OtherDigits, OtherNarrowest>>>(from)) {
+                elastic_integer<OtherDigits, OtherNarrowest> const&) {
             return static_cast<_impl::common_type_t<
                     elastic_integer<FromDigits, FromNarrowest>,
                     elastic_integer<OtherDigits, OtherNarrowest>>>(from);
@@ -262,18 +245,14 @@ namespace cnl {
         constexpr auto operate(
                 elastic_integer<LhsDigits, LhsNarrowest> const& lhs,
                 elastic_integer<RhsDigits, RhsNarrowest> const& rhs,
-                Operator op)
-        -> decltype(op(cast_to_common_type(lhs, rhs), cast_to_common_type(rhs, lhs)))
-        {
+                Operator op) {
             return op(cast_to_common_type(lhs, rhs), cast_to_common_type(rhs, lhs));
         }
 
         template<class Operator, int Digits, class Narrowest,
                 class = enable_if_t<Operator::is_comparison>>
         constexpr auto
-        operate(elastic_integer<Digits, Narrowest> const& lhs, elastic_integer<Digits, Narrowest> const& rhs, Operator op)
-        -> decltype(op(lhs.data(), rhs.data()))
-        {
+        operate(elastic_integer<Digits, Narrowest> const& lhs, elastic_integer<Digits, Narrowest> const& rhs, Operator op) {
             return op(lhs.data(), rhs.data());
         }
     }
@@ -367,9 +346,7 @@ namespace cnl {
         constexpr auto operate(
                 elastic_integer<LhsDigits, LhsNarrowest> const& lhs,
                 elastic_integer<RhsDigits, RhsNarrowest> const& rhs,
-                Operator op)
-        -> typename operate_params<Operator, LhsDigits, LhsNarrowest, RhsDigits, RhsNarrowest>::result_type
-        {
+                Operator op) {
             using result_type = typename operate_params<Operator, LhsDigits, LhsNarrowest, RhsDigits, RhsNarrowest>::result_type;
             return result_type::from_data(
                     static_cast<typename result_type::rep>(op(
@@ -380,18 +357,14 @@ namespace cnl {
 
     // unary operator-
     template<int RhsDigits, class RhsNarrowest>
-    constexpr auto operator-(elastic_integer<RhsDigits, RhsNarrowest> const& rhs)
-    -> elastic_integer<RhsDigits, typename make_signed<RhsNarrowest>::type>
-    {
+    constexpr auto operator-(elastic_integer<RhsDigits, RhsNarrowest> const& rhs) {
         using result_type = elastic_integer<RhsDigits, typename make_signed<RhsNarrowest>::type>;
         return result_type::from_data(-static_cast<result_type>(rhs).data());
     }
 
     // unary operator+
     template<int RhsDigits, class RhsNarrowest>
-    constexpr auto operator+(elastic_integer<RhsDigits, RhsNarrowest> const& rhs)
-    -> elastic_integer<RhsDigits, typename make_signed<RhsNarrowest>::type>
-    {
+    constexpr auto operator+(elastic_integer<RhsDigits, RhsNarrowest> const& rhs) {
         using result_type = elastic_integer<RhsDigits, typename make_signed<RhsNarrowest>::type>;
         return result_type::from_data(static_cast<result_type>(rhs).data());
     }

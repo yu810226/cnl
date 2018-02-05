@@ -47,8 +47,7 @@ namespace cnl {
 
 #if defined(CNL_EXCEPTIONS_ENABLED)
         template<class Result>
-        constexpr Result return_if(bool condition, Result const& value, char const* )
-        {
+        constexpr Result return_if(bool condition, Result const& value, char const* ) {
             return condition ? value : throw std::overflow_error("");
         }
 #else
@@ -91,8 +90,7 @@ namespace cnl {
         template<
                 class Destination, class Source,
                 _impl::enable_if_t<!(positive_digits<Destination>::value<positive_digits<Source>::value), int> dummy = 0>
-        constexpr bool is_positive_overflow(Source const&)
-        {
+        constexpr bool is_positive_overflow(Source const&) {
             // If positive capacity of Destination is equal to or exceeds that of Source,
             // positive overflow cannot occur.
             return false;
@@ -101,8 +99,7 @@ namespace cnl {
         template<
                 class Destination, class Source,
                 _impl::enable_if_t<(positive_digits<Destination>::value<positive_digits<Source>::value), int> dummy = 0>
-        constexpr bool is_positive_overflow(Source const& source)
-        {
+        constexpr bool is_positive_overflow(Source const& source) {
             return source>static_cast<Source>(std::numeric_limits<Destination>::max());
         }
 
@@ -110,8 +107,7 @@ namespace cnl {
         template<
                 class Destination, class Source,
                 _impl::enable_if_t<!(negative_digits<Destination>::value<negative_digits<Source>::value), int> dummy = 0>
-        constexpr bool is_negative_overflow(Source const&)
-        {
+        constexpr bool is_negative_overflow(Source const&) {
             // If positive capacity of Destination is equal to or exceeds that of Source,
             // positive overflow cannot occur.
             return false;
@@ -120,8 +116,7 @@ namespace cnl {
         template<
                 class Destination, class Source,
                 _impl::enable_if_t<(negative_digits<Destination>::value<negative_digits<Source>::value), int> dummy = 0>
-        constexpr bool is_negative_overflow(Source const& source)
-        {
+        constexpr bool is_negative_overflow(Source const& source) {
             return source<static_cast<Source>(std::numeric_limits<Destination>::lowest());
         }
 
@@ -133,14 +128,12 @@ namespace cnl {
     }
 
     template<class Result, class Input>
-    constexpr Result convert(native_overflow_tag, Input const& rhs)
-    {
+    constexpr Result convert(native_overflow_tag, Input const& rhs) {
         return static_cast<Result>(rhs);
     }
 
     template<class Result, class Input>
-    constexpr Result convert(throwing_overflow_tag, Input const& rhs)
-    {
+    constexpr Result convert(throwing_overflow_tag, Input const& rhs) {
         return _impl::encompasses<Result, Input>::value
                ? static_cast<Result>(rhs)
                : _overflow_impl::return_if(
@@ -153,8 +146,7 @@ namespace cnl {
     }
 
     template<class Result, class Input>
-    constexpr Result convert(saturated_overflow_tag, Input const& rhs)
-    {
+    constexpr Result convert(saturated_overflow_tag, Input const& rhs) {
         using numeric_limits = std::numeric_limits<Result>;
         return !_impl::encompasses<Result, Input>::value
                ? _overflow_impl::is_positive_overflow<Result>(rhs)
@@ -173,9 +165,7 @@ namespace cnl {
         template<>
         struct operate<native_overflow_tag, _impl::add_op> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> decltype(lhs+rhs)
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 return lhs+rhs;
             }
         };
@@ -183,9 +173,7 @@ namespace cnl {
         template<>
         struct operate<throwing_overflow_tag, _impl::add_op> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> decltype(lhs+rhs)
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 using result_type = decltype(lhs+rhs);
                 using numeric_limits = std::numeric_limits<result_type>;
                 return _overflow_impl::return_if(
@@ -200,9 +188,7 @@ namespace cnl {
         template<>
         struct operate<saturated_overflow_tag, _impl::add_op> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> _impl::op_result<_impl::add_op, Lhs, Rhs>
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 using result_type = decltype(lhs+rhs);
                 using numeric_limits = std::numeric_limits<result_type>;
                 return (rhs>0)
@@ -213,9 +199,7 @@ namespace cnl {
     }
 
     template<class OverflowTag, class Lhs, class Rhs>
-    constexpr auto add(OverflowTag, Lhs const& lhs, Rhs const& rhs)
-    -> decltype(lhs+rhs)
-    {
+    constexpr auto add(OverflowTag, Lhs const& lhs, Rhs const& rhs) {
         return for_rep<decltype(lhs+rhs)>(_overflow_impl::operate<OverflowTag, _impl::add_op>(), lhs, rhs);
     }
 
@@ -227,9 +211,7 @@ namespace cnl {
         template<>
         struct operate<native_overflow_tag, _impl::subtract_op> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> decltype(lhs-rhs)
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 return lhs-rhs;
             }
         };
@@ -237,9 +219,7 @@ namespace cnl {
         template<>
         struct operate<throwing_overflow_tag, _impl::subtract_op> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> decltype(lhs-rhs)
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 using result_type = decltype(lhs-rhs);
                 using numeric_limits = std::numeric_limits<result_type>;
                 return _overflow_impl::return_if(
@@ -254,9 +234,7 @@ namespace cnl {
         template<>
         struct operate<saturated_overflow_tag, _impl::subtract_op> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> _impl::op_result<_impl::subtract_op, Lhs, Rhs>
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 using result_type = decltype(lhs-rhs);
                 using numeric_limits = std::numeric_limits<result_type>;
                 return (rhs<0)
@@ -267,9 +245,7 @@ namespace cnl {
     }
 
     template<class OverflowTag, class Lhs, class Rhs>
-    constexpr auto subtract(OverflowTag, Lhs const& lhs, Rhs const& rhs)
-    -> decltype(lhs-rhs)
-    {
+    constexpr auto subtract(OverflowTag, Lhs const& lhs, Rhs const& rhs) {
         return for_rep<decltype(lhs-rhs)>(_overflow_impl::operate<OverflowTag, _impl::subtract_op>(), lhs, rhs);
     }
 
@@ -281,16 +257,13 @@ namespace cnl {
         template<>
         struct operate<native_overflow_tag, _impl::multiply_op> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> decltype(lhs*rhs)
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 return lhs*rhs;
             }
         };
 
         template<class Lhs, class Rhs>
-        constexpr bool is_multiply_overflow(Lhs const& lhs, Rhs const& rhs)
-        {
+        constexpr bool is_multiply_overflow(Lhs const& lhs, Rhs const& rhs) {
             using result_nl = std::numeric_limits<decltype(lhs*rhs)>;
             return lhs && rhs && ((lhs>Lhs{})
                                   ? ((rhs>Rhs{}) ? (result_nl::max()/rhs) : (result_nl::lowest()/rhs))<lhs
@@ -300,9 +273,7 @@ namespace cnl {
         template<>
         struct operate<throwing_overflow_tag, _impl::multiply_op> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> decltype(lhs*rhs)
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 return _overflow_impl::return_if(
                         !is_multiply_overflow(lhs, rhs),
                         lhs*rhs, "overflow in multiplication");
@@ -312,9 +283,7 @@ namespace cnl {
         template<>
         struct operate<saturated_overflow_tag, _impl::multiply_op> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> _impl::op_result<_impl::multiply_op, Lhs, Rhs>
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 using result_type = decltype(lhs*rhs);
                 return is_multiply_overflow(lhs, rhs)
                        ? ((lhs>0) ^ (rhs>0))
@@ -326,9 +295,7 @@ namespace cnl {
     }
 
     template<class OverflowTag, class Lhs, class Rhs>
-    constexpr auto multiply(OverflowTag, Lhs const& lhs, Rhs const& rhs)
-    -> decltype(lhs*rhs)
-    {
+    constexpr auto multiply(OverflowTag, Lhs const& lhs, Rhs const& rhs) {
         return for_rep<decltype(lhs*rhs)>(_overflow_impl::operate<OverflowTag, _impl::multiply_op>(), lhs, rhs);
     }
 
@@ -340,9 +307,7 @@ namespace cnl {
         template<class OverflowTag>
         struct operate<OverflowTag, _impl::divide_op> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> decltype(lhs/rhs)
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 return lhs/rhs;
             }
         };
@@ -357,9 +322,7 @@ namespace cnl {
         struct operate<native_overflow_tag, Operator,
                 _impl::enable_if_t<Operator::is_comparison>> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-        -> decltype(Operator()(lhs, rhs))
-        {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
             return Operator()(lhs, rhs);
         }
         };
@@ -368,9 +331,7 @@ namespace cnl {
         struct operate<throwing_overflow_tag, Operator,
                 _impl::enable_if_t<Operator::is_comparison>> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> _impl::op_result<Operator, Lhs, Rhs>
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 return Operator()(lhs, rhs);
             }
         };
@@ -379,9 +340,7 @@ namespace cnl {
         struct operate<saturated_overflow_tag, Operator,
                 _impl::enable_if_t<Operator::is_comparison>> {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const
-            -> _impl::op_result<Operator, Lhs, Rhs>
-            {
+            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const {
                 // assumes all arithmetic-induced implicit convertion goes the same
                 // or at least that `|` is a less "promotion-inducing" operation
                 using converted = decltype(lhs | rhs);

@@ -14,14 +14,14 @@
 #include <limits>
 #include <type_traits>
 
-#include "cnl/FPGA/ap.limits.h"
+//#include "cnl/FPGA/ap.limits.h"
 
 namespace cnl {
     namespace _impl {
         template<class Derived, class Rep>
         class number_base {
         public:
-            static_assert(std::numeric_limits<Rep>::is_integer, "number_base must be specialized with integer Rep type template parameter");
+            //static_assert(std::numeric_limits<Rep>::is_integer, "number_base must be specialized with integer Rep type template parameter");
 
             using rep = Rep;
             using _derived = Derived;
@@ -91,7 +91,7 @@ namespace cnl {
 
         ////////////////////////////////////////////////////////////////////////////////
         // cnl::_impl::enable_if_precedes
-        
+
         template<class Former, class Latter>
         struct precedes {
             static constexpr bool value =
@@ -108,9 +108,7 @@ namespace cnl {
         template<
                 class Operator, class Lhs, class RhsDerived, class RhsRep,
                 enable_if_t <precedes<Lhs, RhsDerived>::value, std::nullptr_t> = nullptr>
-        constexpr auto operate(Lhs const& lhs, number_base<RhsDerived, RhsRep> const& rhs, Operator op)
-        -> decltype(op(lhs, static_cast<Lhs>(static_cast<RhsDerived const&>(rhs))))
-        {
+        constexpr auto operate(Lhs const& lhs, number_base<RhsDerived, RhsRep> const& rhs, Operator op) {
             return op(lhs, static_cast<Lhs>(static_cast<RhsDerived const&>(rhs)));
         }
 
@@ -118,36 +116,30 @@ namespace cnl {
         template<
                 class Operator, class LhsDerived, class LhsRep, class Rhs,
                 enable_if_t <precedes<Rhs, LhsDerived>::value, std::nullptr_t> = nullptr>
-        constexpr auto operate(number_base<LhsDerived, LhsRep> const& lhs, Rhs const& rhs, Operator op)
-        -> decltype(op(static_cast<Rhs>(static_cast<LhsDerived const&>(lhs)), rhs))
-        {
+        constexpr auto operate(number_base<LhsDerived, LhsRep> const& lhs, Rhs const& rhs, Operator op) {
             return op(static_cast<Rhs>(static_cast<LhsDerived const&>(lhs)), rhs);
         }
 
         // lower OP number_base<>
-        template<
-                class Operator, class Lhs, class RhsDerived, class RhsRep,
-                enable_if_t <precedes<RhsDerived, Lhs>::value, std::nullptr_t> = nullptr>
-        constexpr auto operate(Lhs const& lhs, number_base<RhsDerived, RhsRep> const& rhs, Operator op)
-        -> decltype(op(_impl::from_value<RhsDerived>(lhs), static_cast<RhsDerived const&>(rhs))) {
-            return op(from_value<RhsDerived>(lhs), static_cast<RhsDerived const&>(rhs));
-        }
+        //template<
+        //        class Operator, class Lhs, class RhsDerived, class RhsRep,
+        //        enable_if_t <precedes<RhsDerived, Lhs>::value, std::nullptr_t> = nullptr>
+        //constexpr auto operate(Lhs const& lhs, number_base<RhsDerived, RhsRep> const& rhs, Operator op) {
+        //    return op(from_value<RhsDerived>(lhs), static_cast<RhsDerived const&>(rhs));
+        //}
 
         // number_base<> OP lower
         template<
                 class Operator, class LhsDerived, class LhsRep, class Rhs,
                 enable_if_t <precedes<LhsDerived, Rhs>::value, std::nullptr_t> = nullptr>
-        constexpr auto operate(number_base<LhsDerived, LhsRep> const& lhs, Rhs const& rhs, Operator op)
-        -> decltype(op(static_cast<LhsDerived const&>(lhs), from_value<LhsDerived>(rhs)))
-        {
+        //constexpr auto operate(number_base<LhsDerived, LhsRep> const& lhs, Rhs const& rhs, Operator op)
+        auto operate(number_base<LhsDerived, LhsRep> const& lhs, Rhs const& rhs, Operator op) {
             return op(static_cast<LhsDerived const&>(lhs), from_value<LhsDerived>(rhs));
         }
 
         // unary operate
         template<class Operator, class RhsDerived, class RhsRep>
-        constexpr auto operate(number_base<RhsDerived, RhsRep> const& rhs, Operator op)
-        -> decltype(op(rhs.data()))
-        {
+        constexpr auto operate(number_base<RhsDerived, RhsRep> const& rhs, Operator op) {
             return op(rhs.data());
         }
 
@@ -157,143 +149,106 @@ namespace cnl {
         // compound assignment
 
         template<class Lhs, class Rhs, class = enable_if_t <is_derived_from_number_base<Lhs>::value>>
-        auto operator+=(Lhs& lhs, Rhs const& rhs)
-        -> decltype(lhs = lhs + rhs)
-        {
+        auto operator+=(Lhs& lhs, Rhs const& rhs) {
             return lhs = lhs + rhs;
         }
 
         template<class Lhs, class Rhs, class = enable_if_t <is_derived_from_number_base<Lhs>::value>>
-        auto operator-=(Lhs& lhs, Rhs const& rhs)
-        -> decltype(lhs = lhs - rhs)
-        {
+        auto operator-=(Lhs& lhs, Rhs const& rhs) {
             return lhs = lhs - rhs;
         }
 
         template<class Lhs, class Rhs, class = enable_if_t <is_derived_from_number_base<Lhs>::value>>
-        auto operator*=(Lhs& lhs, Rhs const& rhs)
-        -> decltype(lhs = lhs * rhs)
-        {
+        auto operator*=(Lhs& lhs, Rhs const& rhs) {
             return lhs = lhs * rhs;
         }
 
         template<class Lhs, class Rhs, class = enable_if_t <is_derived_from_number_base<Lhs>::value>>
-        auto operator/=(Lhs& lhs, Rhs const& rhs)
-        -> decltype(lhs = lhs / rhs)
-        {
+        auto operator/=(Lhs& lhs, Rhs const& rhs) {
             return lhs = lhs / rhs;
         }
 
         // unary operators
 
         template<class RhsDerived, class RhsRep>
-        constexpr auto operator+(number_base<RhsDerived, RhsRep> const& rhs)
-        -> decltype(operate(rhs, plus_tag))
-        {
+        constexpr auto operator+(number_base<RhsDerived, RhsRep> const& rhs) {
             return operate(rhs, plus_tag);
         }
 
         template<class RhsDerived, class RhsRep>
-        constexpr auto operator-(number_base<RhsDerived, RhsRep> const& rhs)
-        -> decltype(operate(rhs, minus_tag))
-        {
+        constexpr auto operator-(number_base<RhsDerived, RhsRep> const& rhs) {
             return operate(rhs, minus_tag);
         }
 
         // binary arithmetic operators
 
         template<class Lhs, class Rhs>
-        constexpr auto operator+(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, add_tag))
-        {
+        //constexpr auto operator+(Lhs const& lhs, Rhs const& rhs)
+        auto operator+(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, add_tag);
         }
 
         template<class Lhs, class Rhs>
-        constexpr auto operator-(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, subtract_tag))
-        {
+        constexpr auto operator-(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, subtract_tag);
         }
 
         template<class Lhs, class Rhs>
-        constexpr auto operator*(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, multiply_tag))
-        {
+        constexpr auto operator*(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, multiply_tag);
         }
 
         template<class Lhs, class Rhs>
-        constexpr auto operator/(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, divide_tag))
-        {
+        constexpr auto operator/(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, divide_tag);
         }
 
         // binary bitwise logic operators
-        
+
         template<class Lhs, class Rhs>
-        constexpr auto operator|(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, bitwise_or_tag))
-        {
+        constexpr auto operator|(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, bitwise_or_tag);
         }
-        
+
         template<class Lhs, class Rhs>
-        constexpr auto operator&(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, bitwise_and_tag))
-        {
+        constexpr auto operator&(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, bitwise_and_tag);
         }
-        
+
         template<class Lhs, class Rhs>
-        constexpr auto operator^(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, bitwise_xor_tag))
-        {
+        constexpr auto operator^(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, bitwise_xor_tag);
         }
 
         // comparison operator
 
         template<class Lhs, class Rhs>
-        constexpr auto operator==(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, equal_tag))
-        {
+        constexpr auto operator==(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, equal_tag);
         }
 
         template<class Lhs, class Rhs>
-        constexpr auto operator!=(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, not_equal_tag))
-        {
+        constexpr auto operator!=(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, not_equal_tag);
         }
 
         template<class Lhs, class Rhs>
-        constexpr auto operator<(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, less_than_tag))
-        {
+        constexpr auto operator<(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, less_than_tag);
         }
 
         template<class Lhs, class Rhs>
-        constexpr auto operator>(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, greater_than_tag))
-        {
+        constexpr auto operator>(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, greater_than_tag);
         }
 
         template<class Lhs, class Rhs>
-        constexpr auto operator<=(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, less_than_or_equal_tag))
-        {
+        constexpr auto operator<=(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, less_than_or_equal_tag);
         }
 
         template<class Lhs, class Rhs>
-        constexpr auto operator>=(Lhs const& lhs, Rhs const& rhs)
-        -> decltype(operate(lhs, rhs, greater_than_or_equal_tag))
-        {
+        constexpr auto operator>=(Lhs const& lhs, Rhs const& rhs) {
             return operate(lhs, rhs, greater_than_or_equal_tag);
         }
     }
@@ -334,15 +289,14 @@ namespace cnl {
     template<class Number>
     struct from_rep<Number, _impl::enable_if_t<_impl::is_derived_from_number_base<Number>::value>> {
         template<class Rep>
-        constexpr auto operator()(Rep const& rep) const -> Number {
+        constexpr auto operator()(Rep const& rep) const {
             return Number::from_data(static_cast<typename Number::rep>(rep));
         }
     };
 
     template<class Number>
     struct to_rep<Number, _impl::enable_if_t<_impl::is_derived_from_number_base<Number>::value>> {
-        constexpr auto operator()(typename Number::_derived const& number) const
-        -> decltype(number.data()){
+        constexpr auto operator()(typename Number::_derived const& number) const {
             return number.data();
         }
     };

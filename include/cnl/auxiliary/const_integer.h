@@ -163,8 +163,7 @@ namespace cnl {
         constexpr auto operate(
                 Lhs const& lhs,
                 const_integer<RhsIntegral, RhsValue, RhsDigits, RhsExponent> const&,
-                Operator op)
-        -> decltype(op(lhs, RhsValue)) {
+                Operator op) {
             return op(lhs, RhsValue);
         }
 
@@ -177,8 +176,7 @@ namespace cnl {
         constexpr auto operate(
                 const_integer<LhsIntegral, LhsValue, LhsDigits, LhsExponent> const&,
                 Rhs const& rhs,
-                Operator op)
-        -> decltype(op(LhsValue, rhs)) {
+                Operator op) {
             return op(LhsValue, rhs);
         }
 
@@ -190,37 +188,28 @@ namespace cnl {
         constexpr auto operate(
                 const_integer<LhsIntegral, LhsValue, LhsDigits, LhsExponent> const&,
                 const_integer<RhsIntegral, RhsValue, RhsDigits, RhsExponent> const&,
-                Operator)
-        -> decltype(const_integer<_impl::op_result<Operator, LhsIntegral, RhsIntegral>, Operator()(LhsValue, RhsValue)>{}) {
+                Operator) {
             return const_integer<_impl::op_result<Operator, LhsIntegral, RhsIntegral>, Operator()(LhsValue, RhsValue)>{};
         }
     }
 
     template<class Lhs, class Rhs, typename _const_integer_impl::enable_if_op<Lhs, Rhs, int>::type dummy = 0>
-    constexpr auto operator+(Lhs const& lhs, Rhs const& rhs)
-    -> decltype(_const_integer_impl::operate(lhs, rhs, _impl::add_tag))
-    {
+    constexpr auto operator+(Lhs const& lhs, Rhs const& rhs) {
         return _const_integer_impl::operate(lhs, rhs, _impl::add_tag);
     }
 
     template<class Lhs, class Rhs, typename _const_integer_impl::enable_if_op<Lhs, Rhs, int>::type dummy = 0>
-    constexpr auto operator-(Lhs const& lhs, Rhs const& rhs)
-    -> decltype(_const_integer_impl::operate(lhs, rhs, _impl::subtract_tag))
-    {
+    constexpr auto operator-(Lhs const& lhs, Rhs const& rhs) {
         return _const_integer_impl::operate(lhs, rhs, _impl::subtract_tag);
     }
 
-    template<class Lhs, class Rhs, typename _const_integer_impl::enable_if_op<Lhs, Rhs, int>::type dummy = 0> 
-    constexpr auto operator*(Lhs const& lhs, Rhs const& rhs)
-    -> decltype(_const_integer_impl::operate(lhs, rhs, _impl::multiply_tag))
-    {
+    template<class Lhs, class Rhs, typename _const_integer_impl::enable_if_op<Lhs, Rhs, int>::type dummy = 0>
+    constexpr auto operator*(Lhs const& lhs, Rhs const& rhs) {
         return _const_integer_impl::operate(lhs, rhs, _impl::multiply_tag);
     }
 
     template<class Lhs, class Rhs, typename _const_integer_impl::enable_if_op<Lhs, Rhs, int>::type dummy = 0>
-    constexpr auto operator/(Lhs const& lhs, Rhs const& rhs)
-    -> decltype(_const_integer_impl::operate(lhs, rhs, _impl::divide_tag))
-    {
+    constexpr auto operator/(Lhs const& lhs, Rhs const& rhs) {
         return _const_integer_impl::operate(lhs, rhs, _impl::divide_tag);
     }
 
@@ -236,25 +225,20 @@ namespace cnl {
         constexpr auto compare(
                 const_integer<LhsIntegral, LhsValue, LhsDigits, LhsExponent> const&,
                 const_integer<RhsIntegral, RhsValue, RhsDigits, RhsExponent> const&,
-                Operator op)
-        -> decltype(op(LhsValue, RhsValue))
-        {
+                Operator op) {
             return op(LhsValue, RhsValue);
         }
     }
-    
+
     template<class Lhs, class Rhs, typename _const_integer_impl::enable_if_op<Lhs, Rhs, int>::type dummy = 0>
-    constexpr auto operator==(Lhs const& lhs, Rhs const& rhs)
-    -> decltype(_const_integer_impl::compare(lhs, rhs, _impl::equal_tag))
-    {
+    constexpr auto operator==(Lhs const& lhs, Rhs const& rhs) {
         return _const_integer_impl::compare(lhs, rhs, _impl::equal_tag);
     }
 
 #if ! defined(_MSC_VER) || (_MSC_VER > 1900)
     template<class RhsIntegral, RhsIntegral RhsValue>
     constexpr const_integer<decltype(-RhsValue), -RhsValue>
-    operator-(const_integer<RhsIntegral, RhsValue>) noexcept
-    {
+    operator-(const_integer<RhsIntegral, RhsValue>) noexcept {
         return const_integer<decltype(-RhsValue), -RhsValue>{};
     }
 #endif
@@ -275,9 +259,7 @@ namespace cnl {
 
     namespace literals {
         template<char... Digits>
-        constexpr auto operator "" _c()
-        -> const_integer<std::intmax_t, _const_integer_impl::digits_to_integral<Digits...>::value>
-        {
+        constexpr auto operator "" _c() {
             return {};
         }
     }
@@ -285,7 +267,7 @@ namespace cnl {
 namespace std {
     ////////////////////////////////////////////////////////////////////////////////
     // std::common_type<const_integer<>, ...>
-    
+
     template<class Integral, Integral Value, int Digits, int Zeros, class Rhs>
     struct common_type<cnl::const_integer<Integral, Value, Digits, Zeros>, Rhs>
         : common_type<Integral, Rhs> {

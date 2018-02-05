@@ -21,18 +21,15 @@ namespace cnl {
 
 #define CNL_INTEGER_BIT_SHIFT_DEFINE(OP) \
     template <class LhsRep, class LhsOverflowTag, class RhsRep, class RhsOverflowTag> \
-    constexpr auto operator OP (safe_integer<LhsRep, LhsOverflowTag> const& lhs, safe_integer<RhsRep, RhsOverflowTag> const& rhs) \
-    -> safe_integer<LhsRep, LhsOverflowTag> { \
+    constexpr auto operator OP (safe_integer<LhsRep, LhsOverflowTag> const& lhs, safe_integer<RhsRep, RhsOverflowTag> const& rhs) { \
         return lhs.data() OP rhs.data(); } \
     \
     template <class Lhs, class RhsRep, class RhsOverflowTag, _impl::enable_if_t<std::is_fundamental<Lhs>::value, int> dummy = 0> \
-    constexpr auto operator OP (Lhs const& lhs, safe_integer<RhsRep, RhsOverflowTag> const& rhs) \
-    -> Lhs { \
+    constexpr auto operator OP (Lhs const& lhs, safe_integer<RhsRep, RhsOverflowTag> const& rhs) { \
         return lhs OP rhs.data(); } \
     \
     template <class LhsRep, class LhsOverflowTag, class Rhs, _impl::enable_if_t<std::is_fundamental<Rhs>::value, int> dummy = 0> \
-    constexpr auto operator OP (safe_integer<LhsRep, LhsOverflowTag> const& lhs, Rhs const& rhs) \
-    -> safe_integer<LhsRep, LhsOverflowTag> { \
+    constexpr auto operator OP (safe_integer<LhsRep, LhsOverflowTag> const& lhs, Rhs const& rhs) { \
         return safe_integer<LhsRep, LhsOverflowTag>(lhs.data() OP rhs); }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -191,8 +188,7 @@ namespace cnl {
     template<class Rep, class OverflowTag>
     struct scale<safe_integer<Rep, OverflowTag>> {
         using value_type = safe_integer<Rep, OverflowTag>;
-        constexpr auto operator()(value_type const& i, int base, int exp) const
-        -> decltype(_impl::to_rep(i) * _num_traits_impl::pow<value_type>(base, exp)) {
+        constexpr auto operator()(value_type const& i, int base, int exp) const {
             return (exp < 0)
                    ? _impl::to_rep(i) / _num_traits_impl::pow<value_type>(base, -exp)
                    : _impl::to_rep(i) * _num_traits_impl::pow<value_type>(base, exp);
@@ -203,9 +199,7 @@ namespace cnl {
     // cnl::make_safe_integer
 
     template<class OverflowTag, class Rep>
-    constexpr auto make_safe_integer(Rep const& value)
-    -> safe_integer<Rep, OverflowTag>
-    {
+    constexpr auto make_safe_integer(Rep const& value) {
         return value;
     }
 
@@ -222,9 +216,7 @@ namespace cnl {
                 OverflowTag,
                 OperatorTag,
                 safe_integer<LhsRep, OverflowTag> const& lhs,
-                safe_integer<RhsRep, OverflowTag> const& rhs)
-        -> decltype(make_safe_integer<OverflowTag>(_overflow_impl::operate<OverflowTag, OperatorTag>()(lhs.data(), rhs.data())))
-        {
+                safe_integer<RhsRep, OverflowTag> const& rhs) {
             return make_safe_integer<OverflowTag>(_overflow_impl::operate<OverflowTag, OperatorTag>()(lhs.data(), rhs.data()));
         }
 
@@ -234,20 +226,16 @@ namespace cnl {
                 OverflowTag,
                 OperatorTag,
                 safe_integer<LhsRep, OverflowTag> const& lhs,
-                safe_integer<RhsRep, OverflowTag> const& rhs)
-        -> decltype(_overflow_impl::operate<OverflowTag, OperatorTag>()(lhs.data(), rhs.data()))
-        {
+                safe_integer<RhsRep, OverflowTag> const& rhs) {
             return _overflow_impl::operate<OverflowTag, OperatorTag>()(lhs.data(), rhs.data());
         }
-    
+
         // for arithmetic operands with different policies
         template<class OperatorTag, class LhsRep, class LhsTag, class RhsRep, class RhsTag>
         constexpr auto operate(
                 const safe_integer<LhsRep, LhsTag>& lhs,
                 const safe_integer<RhsRep, RhsTag>& rhs,
-                OperatorTag operator_tag)
-        -> decltype(operate_common_tag(common_type_t<LhsTag, RhsTag>{}, operator_tag, lhs, rhs))
-        {
+                OperatorTag operator_tag) {
             return operate_common_tag(common_type_t<LhsTag, RhsTag>{}, operator_tag, lhs, rhs);
         }
     }

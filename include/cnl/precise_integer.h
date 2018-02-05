@@ -98,9 +98,7 @@ namespace cnl {
         template<class Operator, class RoundingTag, class LhsRep, class RhsRep, class = enable_if_t<Operator::is_arithmetic>>
         constexpr auto operate_common_tag(
                 precise_integer<LhsRep, RoundingTag> const& lhs,
-                precise_integer<RhsRep, RoundingTag> const& rhs)
-        -> decltype(from_rep<precise_integer<op_result<Operator, LhsRep, RhsRep>, RoundingTag>>(Operator()(lhs.data(), rhs.data())))
-        {
+                precise_integer<RhsRep, RoundingTag> const& rhs) {
             using result_type = precise_integer<op_result<Operator, LhsRep, RhsRep>, RoundingTag>;
             return from_rep<result_type>(Operator()(lhs.data(), rhs.data()));
         }
@@ -109,9 +107,7 @@ namespace cnl {
         template<class Operator, class RoundingTag, class LhsRep, class RhsRep, enable_if_t<Operator::is_comparison, int> = 0>
         constexpr auto operate_common_tag(
                 precise_integer<LhsRep, RoundingTag> const& lhs,
-                precise_integer<RhsRep, RoundingTag> const& rhs)
-        -> decltype(Operator()(lhs.data(), rhs.data()))
-        {
+                precise_integer<RhsRep, RoundingTag> const& rhs) {
             return Operator()(lhs.data(), rhs.data());
         }
 
@@ -120,9 +116,7 @@ namespace cnl {
         constexpr auto operate(
                 precise_integer<LhsRep, LhsRoundingTag> const& lhs,
                 precise_integer<RhsRep, RhsRoundingTag> const& rhs,
-                Operator)
-        -> decltype(operate_common_tag<Operator, common_type_t<LhsRoundingTag, RhsRoundingTag>>(lhs, rhs))
-        {
+                Operator) {
             return operate_common_tag<Operator, common_type_t<LhsRoundingTag, RhsRoundingTag>>(lhs, rhs);
         }
     }
@@ -133,9 +127,7 @@ namespace cnl {
     template<class LhsRep, class LhsRoundingTag, class RhsInteger>
     constexpr auto operator<<(
             precise_integer<LhsRep, LhsRoundingTag> const& lhs,
-            RhsInteger const& rhs)
-    -> decltype(from_rep<precise_integer<decltype(_impl::to_rep(lhs) << rhs), LhsRoundingTag>>(_impl::to_rep(lhs) << rhs))
-    {
+            RhsInteger const& rhs) {
         return from_rep<precise_integer<
                 decltype(_impl::to_rep(lhs) << rhs),
                 LhsRoundingTag>>(_impl::to_rep(lhs) << rhs);

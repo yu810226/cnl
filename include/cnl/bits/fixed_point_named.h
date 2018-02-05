@@ -30,9 +30,7 @@ namespace cnl {
     /// \sa add, subtract, multiply, divide
 
     template<class RhsRep, int RhsExponent>
-    constexpr auto negate(fixed_point<RhsRep, RhsExponent> const& rhs)
-    -> fixed_point<decltype(-rhs.data()), RhsExponent>
-    {
+    constexpr auto negate(fixed_point<RhsRep, RhsExponent> const& rhs) {
         using result_type = fixed_point<decltype(-rhs.data()), RhsExponent>;
         return result_type::from_data(-rhs.data());
     }
@@ -50,9 +48,7 @@ namespace cnl {
     /// \sa negate, subtract, multiply, divide
 
     template<class Lhs, class Rhs>
-    constexpr auto add(Lhs const& lhs, Rhs const& rhs)
-    -> decltype(_impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::add_tag))
-    {
+    constexpr auto add(Lhs const& lhs, Rhs const& rhs) {
         return _impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::add_tag);
     }
 
@@ -69,9 +65,7 @@ namespace cnl {
     /// \sa negate, add, multiply, divide
 
     template<class Lhs, class Rhs>
-    constexpr auto subtract(Lhs const& lhs, Rhs const& rhs)
-    -> decltype(_impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::subtract_tag))
-    {
+    constexpr auto subtract(Lhs const& lhs, Rhs const& rhs) {
         return _impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::subtract_tag);
     }
 
@@ -88,9 +82,7 @@ namespace cnl {
     /// \sa negate, add, subtract, divide
 
     template<class Lhs, class Rhs>
-    constexpr auto multiply(Lhs const& lhs, Rhs const& rhs)
-    -> decltype(_impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::multiply_tag))
-    {
+    constexpr auto multiply(Lhs const& lhs, Rhs const& rhs) {
         return _impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::multiply_tag);
     }
 
@@ -107,9 +99,7 @@ namespace cnl {
     /// \sa negate, add, subtract, multiply
 
     template<class Lhs, class Rhs>
-    constexpr auto divide(Lhs const& lhs, Rhs const& rhs)
-    -> decltype(_impl::fp::operate<_impl::fp::division_named_function_tag>(lhs, rhs, _impl::divide_tag))
-    {
+    constexpr auto divide(Lhs const& lhs, Rhs const& rhs) {
         return _impl::fp::operate<_impl::fp::division_named_function_tag>(lhs, rhs, _impl::divide_tag);
     }
 }

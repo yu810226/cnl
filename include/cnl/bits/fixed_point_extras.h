@@ -24,9 +24,7 @@ namespace cnl {
     // cnl::abs
 
     template<class Rep, int Exponent>
-    constexpr auto abs(fixed_point<Rep, Exponent> const& x) noexcept
-    -> decltype(-x)
-    {
+    constexpr auto abs(fixed_point<Rep, Exponent> const& x) noexcept {
         return (x >= 0) ? static_cast<decltype(-x)>(x) : -x;
     }
 

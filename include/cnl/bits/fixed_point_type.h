@@ -86,7 +86,8 @@ namespace cnl {
 
     private:
         // constructor taking representation explicitly using operator++(int)-style trick
-        constexpr fixed_point(rep r, int)
+        //constexpr fixed_point(rep r, int)
+        fixed_point(rep r, int)
                 :_base(r)
         {
         }
@@ -128,7 +129,7 @@ namespace cnl {
         constexpr fixed_point(S s)
                 :_base(floating_point_to_rep(s))
         {
-        }
+	}
 
         /// copy assignment operator taking an integer type
         template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_integer, int> Dummy = 0>
@@ -147,9 +148,9 @@ namespace cnl {
 
         /// copy assignement operator taking a fixed-point type
         template<class FromRep, int FromExponent>
-        CNL_COPY_CONSTEXPR fixed_point& operator=(fixed_point<FromRep, FromExponent> const& rhs)
-        {
-            _base::operator=(fixed_point_to_rep(rhs));
+	CNL_COPY_CONSTEXPR fixed_point& operator=(fixed_point<FromRep, FromExponent> const& rhs)
+	{
+	    _base::operator=(fixed_point_to_rep(rhs));
             return *this;
         }
 
@@ -193,6 +194,9 @@ namespace cnl {
         static constexpr S rep_to_floating_point(rep r);
 
         template<class FromRep, int FromExponent>
+        static constexpr rep fixed_point_to_rep(fixed_point<FromRep, FromExponent> * rhsp);
+        
+	template<class FromRep, int FromExponent>
         static constexpr rep fixed_point_to_rep(fixed_point<FromRep, FromExponent> const& rhs);
     };
 
@@ -337,6 +341,13 @@ namespace cnl {
         return S(r)*inverse_one<S>();
     }
 
+    //template<class Rep, int Exponent>
+    //template<class FromRep, int FromExponent>
+    //constexpr typename fixed_point<Rep, Exponent>::rep fixed_point<Rep, Exponent>::fixed_point_to_rep(fixed_point<FromRep, FromExponent> * rhsp)
+    //{
+    //    return _impl::shift_left<FromExponent-exponent, rep>(rhsp->data());
+    //}
+    
     template<class Rep, int Exponent>
     template<class FromRep, int FromExponent>
     constexpr typename fixed_point<Rep, Exponent>::rep fixed_point<Rep, Exponent>::fixed_point_to_rep(fixed_point<FromRep, FromExponent> const& rhs)

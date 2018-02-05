@@ -13,7 +13,7 @@
 #include "bits/limits.h"
 #include "bits/type_traits.h"
 
-#include "FPGA/ap.limits.h"
+//#include "FPGA/ap.limits.h"
 
 #include <utility>
 
@@ -384,8 +384,7 @@ namespace cnl {
 
     namespace _impl {
         template<class Number, class Enable = void>
-        constexpr auto to_rep(Number const& number)
-        -> decltype(cnl::to_rep<Number>()(number)) {
+        constexpr auto to_rep(Number const& number) {
             return cnl::to_rep<Number>()(number);
         }
     }
@@ -404,8 +403,7 @@ namespace cnl {
 
     namespace _impl {
         template<class Number, class Rep>
-        constexpr auto from_rep(Rep const& rep)
-        -> decltype(cnl::from_rep<Number>()(rep)) {
+        constexpr auto from_rep(Rep const& rep) {
             return cnl::from_rep<Number>()(rep);
         }
     }
@@ -443,8 +441,8 @@ namespace cnl {
 
     namespace _impl {
         template<class Number, class Value>
-        constexpr auto from_value(Value const& value)
-        -> cnl::from_value_t<Number, Value> {
+        //constexpr auto from_value(Value const& value)
+        auto from_value(Value const& value) {
             return value;
         }
     }
@@ -482,8 +480,7 @@ namespace cnl {
 
     template<class T>
     struct scale {
-        constexpr auto operator()(T const& i, int base, int exp) const
-        -> _num_traits_impl::scale_result_type<T> {
+        constexpr auto operator()(T const& i, int base, int exp) const {
             //return _impl::from_rep<_num_traits_impl::scale_result_type<T>>(
             //        (exp < 0)
             //        ? _impl::to_rep<T>(i) / _num_traits_impl::pow<T>(base, -exp)
@@ -500,8 +497,7 @@ namespace cnl {
     
     namespace _impl {
         template<class T>
-        constexpr auto scale(T const& i, int base, int exp)
-        -> decltype(cnl::scale<T>()(i, base, exp)) {
+        constexpr auto scale(T const& i, int base, int exp) {
             return cnl::scale<T>()(i, base, exp);
         }
     }
