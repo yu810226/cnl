@@ -63,20 +63,16 @@ void test_xilinx_cal_over64() {
         googol *= 10; 
     }   
 
-<<<<<<< HEAD
     // "1e+100"
-=======
-    //// "1e+100"
->>>>>>> 94af38e1351edb79850294b4dac2c48973f85bfe
     std::cout << "googol: " << googol << std::endl;
 
     // Dividing a s31:0 number by a u400:0 number
     auto googolth = 1 / googol;
 
-    //// produces a s31::400 number.
+    // produces a s31::400 number.
     //static_assert(is_same<decltype(googolth), fixed_point<rep<432>, -400> >::value, "");
 
-    //// Prints "1e-100" (although this value is only approximate).
+    // Prints "1e-100" (although this value is only approximate).
     std::cout << "googolth: " << googolth << std::endl;
 }
 
